@@ -1,0 +1,437 @@
+/* === Основні стилі === */
+:root {
+    --bg-light: #ffffff;
+    --bg-dark: #121212;
+    --text-light: #000000;
+    --text-dark: #ffffff;
+    --primary-color: #4CAF50;
+    --accent-color: #3A5B8B;
+    --highlight: #1a73e8;
+    color-scheme: light dark;
+  }
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  
+  /* Темна тема */
+  body.dark-theme {
+    background-color: var(--bg-dark);
+    color: var(--text-dark);
+  }
+  
+  body.dark-theme .site-header,
+  body.dark-theme footer {
+    background-color: #1e1e1e;
+  }
+  
+  body.dark-theme .mode-selector {
+    background-color: #222;
+  }
+  
+  body.dark-theme .check-section,
+  body.dark-theme .info-section,
+  body.dark-theme .compare-section {
+    background-color: #1a1a1a;
+    color: #eee;
+  }
+  
+  body.dark-theme .compare-section th {
+    background-color: #2a2a2a;
+  }
+  
+  body.dark-theme .nav-links a {
+    color: #ccc;
+  }
+  
+  body.dark-theme .login-btn,
+  body.dark-theme .register-btn {
+    border-color: #ccc;
+    color: #ccc;
+  }
+  
+  body.dark-theme .login-btn:hover,
+  body.dark-theme .register-btn:hover {
+    background-color: #ccc;
+    color: #1e1e1e;
+  }
+  
+  body.dark-theme .mode-selector button {
+    color: #aaa;
+  }
+  
+  body.dark-theme .mode-selector button.active {
+    color: var(--highlight);
+    border-color: var(--highlight);
+  }
+  
+  body.dark-theme #main-title,
+  body.dark-theme #subtitle,
+  body.dark-theme #file-info {
+    color: var(--text-dark);
+  }
+  
+  /* Хедер */
+  .site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: var(--accent-color);
+    color: #fff;
+    flex-wrap: wrap;
+  }
+  
+  .logo {
+    font-size: 32px;
+    font-weight: bold;
+  }
+  
+  .nav-links a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+  }
+  
+  .nav-links a:hover {
+    text-decoration: underline;
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .auth-buttons {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .login-btn, .register-btn {
+    background-color: transparent;
+    border: 2px solid #fff;
+    padding: 6px 14px;
+    color: #fff;
+    font-size: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .login-btn:hover, .register-btn:hover {
+    background-color: #ffffff;
+    color: #3A5B8B;
+  }
+  
+  /* Перемикач теми */
+  .theme-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+  }
+  
+  .theme-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0;
+    right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+    font-size: 14px;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  
+  input:checked + .slider {
+    background-color: var(--primary-color);
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(24px);
+  }
+  
+  .icon {
+    pointer-events: none;
+  }
+  
+  main {
+    padding: 40px 20px;
+    max-width: 1000px;
+    margin: auto;
+  }
+  
+  /* Кнопки перевірки */
+  .mode-selector {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 12px;
+  }
+  
+  .mode-selector button {
+    background-color: #e6e6e6;
+    border: none;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 20px;
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .mode-selector button.active {
+    background-color: var(--highlight);
+    color: #fff;
+    font-weight: bold;
+  }
+  
+  .mode-selector button img {
+    width: 18px;
+    height: 18px;
+  }
+  
+  /* Стилі заголовків */
+  .check-section h2,
+  .check-section p,
+  #file-info {
+    text-align: center;
+    transition: color 0.3s;
+  }
+  
+  .check-section h2 {
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--text-light);
+  }
+  
+  .check-section p,
+  #file-info {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #666;
+  }
+  
+  textarea, input[type="url"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+  }
+  
+  /* Красива кнопка "Choose file" */
+  input[type="file"] {
+    display: none;
+  }
+  
+  .custom-file-label {
+    display: inline-block;
+    background-color: #3366ff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    margin-bottom: 15px;
+  }
+  
+  .custom-file-label:hover {
+    background-color: #264de4;
+  }
+  
+  button.check-btn {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button.check-btn:hover {
+    background-color: #66bb6a;
+  }
+  
+  .loader {
+    margin: 20px auto;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .info-section {
+    padding: 40px 20px;
+    border-top: 1px solid #ddd;
+  }
+  
+  .info-section h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .info-section ul {
+    padding-left: 20px;
+  }
+  
+  .compare-section {
+    padding: 40px 20px;
+  }
+  
+  .compare-section table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .compare-section th, .compare-section td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .compare-section th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+  }
+  
+  footer {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--accent-color);
+    color: white;
+    font-size: 14px;
+  }
+  
+  footer .security-policy {
+    font-size: 12px;
+    margin-top: 10px;
+  }
+  
+  footer .security-policy a {
+    color: #ccc;
+    text-decoration: underline;
+  }
+
+  .auth-form {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+  }
+  
+  .auth-form h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .auth-form label {
+    display: block;
+    margin-top: 10px;
+  }
+  
+  .auth-form input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .auth-form button {
+    width: 100%;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .auth-form button:hover {
+    background-color: #45a049;
+  }
+  
+  .auth-form .flashes {
+    color: red;
+    padding: 5px 0;
+    list-style: none;
+  }
+
+  .top-right-logout {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+  }
+  
+  .top-right-logout form {
+    margin: 0;
+  }
+  
+  .small-logout {
+    padding: 5px 10px;
+    font-size: 14px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .small-logout:hover {
+    background-color: #388e3c;
+  }
+  
+  

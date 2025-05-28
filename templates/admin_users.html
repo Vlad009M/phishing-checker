@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Адмін панель | CodeCrafts</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 30px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #3A5B8B;
+      color: white;
+    }
+    td {
+      background-color: #f5f5f5;
+    }
+    .back-btn {
+      margin-top: 20px;
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <main class="auth-form">
+    <h2>Список користувачів</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Тип акаунта</th>
+          <th>Кількість перевірок</th>
+          <th>Дата реєстрації</th>
+          <th>Останній вхід</th>
+          <th>Адмін?</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.id }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.account_type }}</td>
+          <td>{{ user.checks_today }}</td>
+          <td>{{ user.registered_at.strftime('%Y-%m-%d %H:%M') if user.registered_at else '' }}</td>
+          <td>{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Немає' }}</td>
+          <td>{{ 'Так' if user.is_admin else 'Ні' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <a href="/" class="back-btn">← На головну</a>
+  </main>
+</body>
+</html>

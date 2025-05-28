@@ -1,0 +1,46 @@
+<!-- register.html -->
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Реєстрація | CodeCrafts</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="top-right-logout">
+    {% if current_user.is_authenticated %}
+      <form action="{{ url_for('logout') }}" method="get">
+        <button type="submit" class="small-logout">Вийти</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <main class="auth-form">
+    <h2>Реєстрація</h2>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for msg in messages %}<li>{{ msg }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <label>Email:</label>
+      <input type="email" name="email" required>
+      <label>Пароль:</label>
+      <input type="password" name="password" required>
+      <label>Підтвердження пароля:</label>
+      <input type="password" name="confirm" required>
+      <button type="submit">Зареєструватися</button>
+    </form>
+    <p>Уже маєте акаунт? <a href="{{ url_for('login') }}">Увійти</a></p>
+  </main>
+
+  <script>
+    document.querySelector(".logo")?.addEventListener("click", () => {
+      window.location.href = "/";
+    });
+  </script>
+</body>
+</html>

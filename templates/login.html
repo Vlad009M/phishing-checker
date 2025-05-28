@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Вхід | CodeCrafts</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="top-right-logout">
+    {% if current_user.is_authenticated %}
+      <form action="{{ url_for('logout') }}" method="get">
+        <button type="submit" class="small-logout">Вийти</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <main class="auth-form">
+    <h2>Вхід</h2>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <label>Email:</label>
+      <input type="email" name="email" required>
+      <label>Пароль:</label>
+      <input type="password" name="password" required>
+      <button type="submit">Увійти</button>
+    </form>
+    
+    <p>Немає акаунту? <a href="{{ url_for('register') }}">Зареєструватися</a></p>
+  </main>
+
+  <script>
+    document.querySelector(".logo")?.addEventListener("click", () => {
+      window.location.href = "/";
+    });
+  </script>
+</body>
+</html>

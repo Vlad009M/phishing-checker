@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Мій акаунт | CodeCrafts</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo" onclick="window.location.href='/'">CodeCrafts</div>
+    <nav class="nav-links">
+      <a href="/">Головна</a>
+      <a href="/logout">Вийти</a>
+    </nav>
+  </header>
+
+  <main class="auth-form">
+    <h2>👤 Мій акаунт</h2>
+    <p><strong>Email:</strong> {{ current_user.email }}</p>
+    <p><strong>Реєстрація:</strong> {{ current_user.registered_at.strftime('%d.%m.%Y %H:%M') }}</p>
+    <p><strong>Тип акаунта:</strong> {{ current_user.account_type|capitalize }}</p>
+    <p><strong>Перевірок сьогодні:</strong> {{ current_user.checks_today }} / {% if current_user.account_type == 'free' %}5{% else %}∞{% endif %}</p>
+
+    {% if current_user.account_type == 'free' %}
+      <div style="margin-top: 20px;">
+        <button id="upgrade-btn" class="check-btn">Отримати Premium</button>
+      </div>
+    {% endif %}
+  </main>
+
+  <script>
+    document.querySelector(".logo").addEventListener("click", () => {
+      window.location.href = "/";
+    });
+
+    const upgradeBtn = document.getElementById("upgrade-btn");
+    if (upgradeBtn) {
+      upgradeBtn.addEventListener("click", () => {
+        alert("👉 Оновлення до Premium у розробці. Зверніться до адміністратора або зачекайте на реалізацію.");
+      });
+    }
+  </script>
+</body>
+</html>
