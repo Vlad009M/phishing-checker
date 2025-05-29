@@ -27,8 +27,8 @@ STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID")
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'matovkavlad@gmail.com'
-app.config['MAIL_PASSWORD'] = 'pqxp lqbo vrce nsfp'
+app.config['MAIL_USERNAME'] = os.getenv("MAIL_USERNAME")
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
 app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
 
 mail = Mail(app)
@@ -268,6 +268,31 @@ def check_file():
 
     except Exception as e:
         return jsonify({'error': f'Помилка читання файлу: {str(e)}'}), 500
+    
+
+# --- Перевірка URL ---
+@app.route('/check-url', methods=['POST'])
+@login_required
+def check_url():
+    if current_user.account_type == 'free' and current_user.checks_today >= 5:
+        return jsonify({'error': 'Ваш ліміт вичерпано. Придбайте Premium для необмеженого доступу.'}), 403
+
+    url = request.form.get('url')
+    if not url:
+        return jsonify({'error': 'URL не передано'}), 400
+
+    try:
+        # Примітивна перевірка, заміни згодом на AI або API
+        is_phishing = "http" in url and ("login" in url or "verify" in url or "update" in url)
+        probability = 80 if is_phishing else 20
+
+        current_user.checks_today += 1
+        db.session.commit()
+        return jsonify({'probability': probability})
+
+    except Exception as e:
+        return jsonify({'error': f'Помилка обробки URL: {str(e)}'}), 500
+
 
 # --- Політика безпеки ---
 @app.route('/security-policy')
