@@ -231,6 +231,12 @@ def check_file():
 with app.app_context():
     db.create_all()
 
+# --- Політика безпеки ---
+@app.route('/security-policy')
+def security_policy():
+    return render_template('security_policy.html')
+
+
 # --- Запуск ---
 if __name__ == '__main__':
     app.run(debug=True)
