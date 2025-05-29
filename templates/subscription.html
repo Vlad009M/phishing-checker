@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Керування підпискою — CodeCrafts</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="logo">CodeCrafts</div>
+    <nav class="nav-links">
+      <a href="/">Головна</a>
+      <a href="/profile">Профіль</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Керування підпискою</h1>
+    <p>Ваш тип акаунта: <strong>{{ current_user.account_type }}</strong></p>
+
+    {% if current_user.account_type == 'free' %}
+      <form action="/create-checkout-session" method="post">
+        <button type="submit" class="btn">Придбати Premium за $2/міс</button>
+      </form>
+    {% else %}
+      <p>🎉 Ви вже є Premium-користувачем. Дякуємо за підтримку!</p>
+    {% endif %}
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; 2025 CodeCrafts</p>
+  </footer>
+</body>
+</html>

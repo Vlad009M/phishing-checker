@@ -11,16 +11,24 @@ from ml_model import predict_phishing
 from local_ai_analyzer import analyze_with_local_ai
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
+import stripe
+from dotenv import load_dotenv
+load_dotenv()
+
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key'
+app.secret_key = os.getenv("SECRET_KEY")
 
-# --- Налаштування пошти ---
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
+STRIPE_PRICE_ID = os.getenv("STRIPE_PRICE_ID")
+
+# --- Пошта ---
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'matovkavlad@gmail.com'  # 🔒 Замінити на справжній
-app.config['MAIL_PASSWORD'] = 'pqxp lqbo vrce nsfp'    # 🔒 App password
+app.config['MAIL_USERNAME'] = 'matovkavlad@gmail.com'
+app.config['MAIL_PASSWORD'] = 'pqxp lqbo vrce nsfp'
 app.config['MAIL_DEFAULT_SENDER'] = app.config['MAIL_USERNAME']
 
 mail = Mail(app)
@@ -40,7 +48,7 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# --- Головна сторінка ---
+# --- Головна ---
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -74,11 +82,9 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        # Підтвердження пошти
         token = s.dumps(email, salt='email-confirm')
         confirm_url = url_for('confirm_email', token=token, _external=True)
-
-        msg = Message("Підтвердження пошти", recipients=[email], sender=app.config['MAIL_USERNAME'])
+        msg = Message("Підтвердження пошти", recipients=[email])
         msg.body = f"Привіт! Для завершення реєстрації підтвердіть вашу пошту:\n\n{confirm_url}"
         mail.send(msg)
 
@@ -87,7 +93,7 @@ def register():
 
     return render_template('register.html')
 
-# --- Підтвердження пошти ---
+# --- Підтвердження ---
 @app.route('/confirm/<token>')
 def confirm_email(token):
     try:
@@ -142,7 +148,7 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-# --- Адмін панель ---
+# --- Адмінка ---
 @app.route('/admin/users')
 @login_required
 def admin_users():
@@ -152,47 +158,84 @@ def admin_users():
     users = User.query.all()
     return render_template('admin_users.html', users=users)
 
-# --- Перевірка тексту ---
+@app.route('/admin-dashboard')
+@login_required
+def admin_dashboard():
+    if not current_user.is_admin:
+        flash("Доступ заборонено")
+        return redirect(url_for('index'))
+    users = User.query.all()
+    return render_template('admin_dashboard.html', users=users)
+
+# --- Преміум Stripe ---
+@app.route('/create-checkout-session', methods=['POST'])
+@login_required
+def create_checkout_session():
+    session = stripe.checkout.Session.create(
+        payment_method_types=['card'],
+        mode='subscription',
+        line_items=[{
+            'price': STRIPE_PRICE_ID,
+            'quantity': 1,
+        }],
+        customer_email=current_user.email,
+        success_url=url_for('checkout_success', _external=True),
+        cancel_url=url_for('subscription', _external=True),
+    )
+    return redirect(session.url, code=303)
+
+@app.route('/checkout-success')
+@login_required
+def checkout_success():
+    current_user.account_type = 'premium'
+    db.session.commit()
+    flash('Оплата пройшла успішно. Premium активовано!')
+    return redirect(url_for('subscription'))
+
+@app.route('/subscription')
+@login_required
+def subscription():
+    return render_template('subscription.html')
+
+@app.route('/buy-premium')
+@login_required
+def buy_premium():
+    if current_user.account_type == 'premium':
+        flash("У вас вже активовано Premium.")
+        return redirect(url_for('profile'))
+    return render_template('buy_premium.html')
+
+@app.route('/activate-premium', methods=['POST'])
+@login_required
+def activate_premium():
+    current_user.account_type = 'premium'
+    db.session.commit()
+    flash("Підписка Premium активована!")
+    return redirect(url_for('profile'))
+
+# --- Перевірка тексту, файлів, AI ---
 @app.route('/predict-text', methods=['POST'])
 @login_required
 def predict_text():
     if current_user.account_type == 'free' and current_user.checks_today >= 5:
         return jsonify({'error': 'Ваш ліміт вичерпано. Придбайте Premium для необмеженого доступу.'}), 403
-
     data = request.get_json()
-    text = data.get('text', '')
-    result = predict_phishing(text)
+    result = predict_phishing(data.get('text', ''))
     current_user.checks_today += 1
     db.session.commit()
     return jsonify({'probability': result})
 
-@app.route('/check-text', methods=['POST'])
-@login_required
-def check_text():
-    if current_user.account_type == 'free' and current_user.checks_today >= 5:
-        return jsonify({'error': 'Ваш ліміт вичерпано. Придбайте Premium для необмеженого доступу.'}), 403
-
-    text = request.form.get('text', '')
-    probability = predict_phishing(text)
-    current_user.checks_today += 1
-    db.session.commit()
-    return jsonify({'probability': probability})
-
-# --- AI аналіз ---
 @app.route('/ai-analysis', methods=['POST'])
 @login_required
 def ai_analysis():
     if current_user.account_type == 'free' and current_user.checks_today >= 5:
         return jsonify({'error': 'Ваш ліміт вичерпано. Придбайте Premium для необмеженого доступу.'}), 403
-
     data = request.get_json()
-    text = data.get('text', '')
-    result = analyze_with_local_ai(text)
+    result = analyze_with_local_ai(data.get('text', ''))
     current_user.checks_today += 1
     db.session.commit()
     return jsonify({'ai_opinion': result})
 
-# --- Перевірка файлів ---
 @app.route('/check-file', methods=['POST'])
 @login_required
 def check_file():
@@ -206,7 +249,6 @@ def check_file():
     filename = secure_filename(uploaded_file.filename)
     ext = filename.lower().split('.')[-1]
 
-    text = ""
     try:
         if ext == 'txt':
             text = uploaded_file.read().decode('utf-8', errors='ignore')
@@ -227,15 +269,14 @@ def check_file():
     except Exception as e:
         return jsonify({'error': f'Помилка читання файлу: {str(e)}'}), 500
 
-# --- Ініціалізація БД ---
-with app.app_context():
-    db.create_all()
-
 # --- Політика безпеки ---
 @app.route('/security-policy')
 def security_policy():
     return render_template('security_policy.html')
 
+# --- Ініціалізація БД ---
+with app.app_context():
+    db.create_all()
 
 # --- Запуск ---
 if __name__ == '__main__':

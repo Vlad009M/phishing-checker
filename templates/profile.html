@@ -23,7 +23,10 @@
 
     {% if current_user.account_type == 'free' %}
       <div style="margin-top: 20px;">
-        <button id="upgrade-btn" class="check-btn">Отримати Premium</button>
+        <form action="/create-checkout-session" method="post">
+  <button type="submit" class="check-btn">Отримати Premium</button>
+</form>
+
       </div>
     {% endif %}
   </main>

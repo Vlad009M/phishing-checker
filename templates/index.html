@@ -16,6 +16,10 @@
       <a href="/">Головна</a>
       {% if current_user.is_authenticated %}
         <a href="/profile">Профіль</a>
+        <a href="/subscription">Підписка</a>
+        {% if current_user.is_admin %}
+        <a href="/admin-dashboard">Адмінка</a>
+        {% endif %}
       {% endif %}
     </nav>
     <div class="header-actions">
@@ -43,6 +47,13 @@
   </header>
 
   <main>
+    {% if current_user.is_authenticated and current_user.account_type == 'free' %}
+    <section class="premium-offer">
+      <p>🔓 У вас безкоштовний акаунт. Хочете необмежений доступ до перевірок?</p>
+      <a href="/subscription" class="btn premium-btn">Придбати Premium</a>
+    </section>
+    {% endif %}
+
     <!-- Перемикач режиму перевірки -->
     <div class="mode-selector">
       <select id="check-mode">
